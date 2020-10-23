@@ -1,6 +1,13 @@
 from flask import Flask, request, render_template
 import json
+
+UPLOAD_FOLDER = 'static/images/'
+
 app = Flask(__name__)
+
+app.secret_key = "thissuredobeademderesecretkey"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 fname = 'occupancy.json'
 
