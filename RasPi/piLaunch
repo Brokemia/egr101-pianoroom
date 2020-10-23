@@ -1,0 +1,17 @@
+#!/bin/bash
+echo "CHECKING NETWORK CONNECTION..."
+
+echo "NETWORK CONNECTED!"
+
+echo "
+CHECKING FOR NEW CODE.......
+"
+cd /home/pi/egr101-pianoroom/
+git pull
+cd RasPi/
+echo "time: `date +%s`" >> /home/pi/egr101-pianoroom/RasPi/bootLog.txt
+echo "
+
+STARTING SOFTWARE.......
+"
+python3 launch.py
