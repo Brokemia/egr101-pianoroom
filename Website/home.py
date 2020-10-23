@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import json
 import time
 
@@ -66,6 +66,9 @@ def home():
                                time2=data['time2'], time3=data[
                                 'time3'], time4=data['time4'])
 
+@app.route('/images/<filename>')
+def display_image(filename):
+    return redirect(url_for('static', filename='images/' + filename), code=301)
 
 if __name__ == '__main__':
     print(time.time())
