@@ -1,1 +1,1 @@
-print("Yo im runnning lol")
+print("I run now")
