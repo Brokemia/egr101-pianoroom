@@ -26,33 +26,14 @@ def get_data():
         try:
             data = json.load(f)
         except ValueError:
-            data = {"room1":False,"room2":False,"room3":False,"room4":False}
+            currTime = time.time()
+            data = {"room1":False,"room2":False,"room3":False,"room4":False,"time1":currTime,"time2":currTime,"time3":currTime,"time4":currTime}
+            
+    if data[f'room{roomNo}'] and not(full):
+        data[f'time{roomNo}'] = time.time()
+            
     data[f'room{roomNo}'] = full
-
-    rooms = ["1", "2", "3", "4"]
-    for roomNum in rooms:
-        if data["room" + roomNum] == True:
-            data["time" + roomNum] = 'In Use'
-            data["timeStamp" + roomNum] = 0.0
-            print('in use' + roomNum)
-        elif data["room" + roomNum] == False:
-            timeSince = "00:00:00"
-            print("timestamp before if statements" + roomNum, time.time())
-            print(data["timeStamp" + roomNum])
-            if data["timeStamp" + roomNum] > 0.0:
-                recordedTime = data["timeStamp" + roomNum]
-                print("if statement" + roomNum, recordedTime)
-                timeDiff = int(time.time() - recordedTime)
-                timeSince = str(time.strftime('%H:%M:%S', time.gmtime(
-                    timeDiff)))
-            else:
-                timeSince = "00:00:00"
-                data["timeStamp" + roomNum] = time.time()
-                print("time stamp in else statement" + roomNum,
-                      data["timeStamp" +
-                           roomNum])
-            data["time" + roomNum] = timeSince
-
+                          
     with open(fname, 'w') as f:
         json.dump(data, f)
     return "Data set"
@@ -61,32 +42,15 @@ def get_data():
 def home():
     with open(fname) as f:
         data = json.load(f)
-    rooms = ["1", "2", "3", "4"]
-    for roomNum in rooms:
-        if data["room" + roomNum] == True:
-            data["time" + roomNum] = 'In Use'
-            data["timeStamp" + roomNum] = 0.0
-            print('in use' + roomNum)
-        elif data["room" + roomNum] == False:
-            timeSince = "00:00:00"
-            print("timestamp before if statements" + roomNum, time.time())
-            print(data["timeStamp" + roomNum])
-            if data["timeStamp" + roomNum] > 0.0:
-                recordedTime = data["timeStamp" + roomNum]
-                print("if statement" + roomNum, recordedTime)
-                timeDiff = int(time.time() - recordedTime)
-                timeSince = str(time.strftime('%H:%M:%S', time.gmtime(
-                    timeDiff)))
-            else:
-                timeSince = "00:00:00"
-                data["timeStamp" + roomNum] = time.time()
-                print("time stamp in else statement" + roomNum,
-                      data["timeStamp" +
-                           roomNum])
-            data["time" + roomNum] = timeSince
-    return render_template('index.html', room1=data['room1'], room2=data['room2'], room3=data['room3'], room4=data['room4'], time1=data["time1"],
-                               time2=data['time2'], time3=data[
-                                'time3'], time4=data['time4'])
+    for roomNo in range(1,5):
+        if data[f'room{roomNo}']:
+            data[f'time{roomNo}'] = 'In Use'
+        else:
+            recordedTime = data[f'time{roomNo}']
+            timeDiff = int(time.time() - recordedTime)
+            data[f'time{roomNo}'] = str(time.strftime('%H:%M:%S', time.gmtime(timeDiff)))
+    return render_template('index.html', room1=data['room1'], room2=data['room2'], room3=data['room3'], room4=data['room4'],
+                                time1=data["time1"], time2=data['time2'], time3=data['time3'], time4=data['time4'])
 
 @app.route('/images/<filename>')
 def display_image(filename):
