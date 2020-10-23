@@ -1,1 +1,4 @@
-{"room1": true, "room2": false, "room3": true, "room4": false, "room5": false}
+{"room1": true, "room2": false, "room3": true, "room4": false, "room5": false,
+"time1": "00:00:00", "time2": "00:00:00", "time3": "00:00:00", "time4": "00:00:00",
+  "timeStamp1": 0.0, "timeStamp2": 0.0, "timeStamp3": 0.0, "timeStamp4": 0.0
+}
