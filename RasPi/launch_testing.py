@@ -21,8 +21,10 @@ RED_PIN = 2
 BLUE_PIN = 3
 GREEN_PIN = 4
 
-#URLs for data 
+#URLs for data
 ROOT_URL = 'http://test.com'
+if "-local" in sys.argv:
+    ROOT_URL = 'http://localhost:5000'
 FALSE_ROOM_URL = "/roomdata?r={}&f=0".format(ROOM_NUM)
 TRUE_ROOM_URL  = "/roomdata?r={}&f=1".format(ROOM_NUM)
 FALSE_JAM_URL  = "/jamdata?r={}&j=0".format(ROOM_NUM)
@@ -181,10 +183,23 @@ def main_work():
     rgb_led.color = Color('green')
     sleep(PROGRAM_HZ/1000)
 
+def testing():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(str(pir_sensor.is_pressed))
+    print(str(distance_sensor.distance))
+    print(str(jam_button.is_pressed))
+    rgb_led.color = Color('green')
+    rgb_led.toggle()
+    jam_led.toggle()
+    sleep(PROGRAM_HZ/1000)
+
+
 # Runs the code in normal mode if testing flag is present, otherwise sets led to red if any errors
 network_wait()
-if sys.argv[1] == "-testing":
+if sys.argv[1] == "-v":
     while True: main_work()
+if sys.argv[1] == "-testing":
+    while True: testing()
 else:
     while True:
         try:
