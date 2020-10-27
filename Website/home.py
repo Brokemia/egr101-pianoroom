@@ -59,6 +59,10 @@ def display_image(filename):
 @app.route('/styles/<filename>')
 def get_style(filename):
     return redirect(url_for('static', filename='styles/' + filename), code=301)
+    
+@app.route('/scripts/<filename>')
+def get_script(filename):
+    return redirect(url_for('static', filename='scripts/' + filename), code=301)
 
 if __name__ == '__main__':
     print(time.time())

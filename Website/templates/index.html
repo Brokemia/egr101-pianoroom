@@ -52,10 +52,12 @@
 			margin: 5px;
 		}
 		</style>
+		<script type="text/javascript" src="scripts/Chart.js"></script>
+		<script type="text/javascript" src="scripts/Chart.min.js"></script>
     </head>
     <body>
 		<div id="header">
-			<h1>Duke Piano Room</h1>
+			<h1>Duke Piano Rooms</h1>
 		</div>
 		<div id="content">
 			<!-- Table generated on https://www.tablesgenerator.com/html_tables -->
@@ -95,6 +97,49 @@
 				  </tr>
 				</tbody>
 			</table>
+			<br /><br />
+			<div class="chart-container" style="position: relative; height:25vw; width:24vw">
+				<canvas id="myChart"></canvas>
+			</div>
 		</div>
+		<script>
+			var ctx = document.getElementById('myChart').getContext('2d');
+			var myChart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					labels: ['12am', '2am', '4am', '6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'],
+					datasets: [{
+						label: '# of Votes',
+						data: [12, 19, 3, 5, 2, 3],
+						backgroundColor: [
+							'rgba(255, 99, 132, 0.2)',
+							'rgba(54, 162, 235, 0.2)',
+							'rgba(255, 206, 86, 0.2)',
+							'rgba(75, 192, 192, 0.2)',
+							'rgba(153, 102, 255, 0.2)',
+							'rgba(255, 159, 64, 0.2)'
+						],
+						borderColor: [
+							'rgba(255, 99, 132, 1)',
+							'rgba(54, 162, 235, 1)',
+							'rgba(255, 206, 86, 1)',
+							'rgba(75, 192, 192, 1)',
+							'rgba(153, 102, 255, 1)',
+							'rgba(255, 159, 64, 1)'
+						],
+						borderWidth: 1
+					}]
+				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							}
+						}]
+					}
+				}
+			});
+			</script>
     </body>
 </html>
