@@ -52,28 +52,51 @@
 					<td class="tg-vub4">1</td>
 					<td class="tg-zv4m">{{ room1 }}</td>
 					<td class="tg-zv4m">{{ time1 }}</td>
-					<td class="tg-zv4m"></td>
+					<td class="tg-zv4m" id="jamRoom1"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">2</td>
 					<td class="tg-usta">{{ room2 }}</td>
 					<td class="tg-usta">{{ time2 }}</td>
-					<td class="tg-usta"><img src="images/jam.png" alt="Image" height="17" ><br></td>
+					<td class="tg-usta" id="jamRoom2"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">3</td>
 					<td class="tg-zv4m">{{ room3 }}</td>
 					<td class="tg-zv4m">{{ time3 }}</td>
-					<td class="tg-oe15"></td>
+					<td class="tg-zv4m" id="jamRoom3"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">4</td>
 					<td class="tg-usta">{{ room4 }}</td>
 					<td class="tg-usta">{{ time4 }}</td>
-					<td class="tg-usta"></td>
+					<td class="tg-usta" id="jamRoom4"></td>
 				  </tr>
 				</tbody>
 			</table>
+			<br>
+			<br>
+			<form action="/emails.txt">
+				<label for="emails">Write Email to recieve alert
+					on room openings:</label><br>
+				<input type="email" id="emails" name="emails"><br>
+				<br>
+				<input type="submit" value="Submit">
+			</form>
 		</div>
+	<script type="text/javascript">
+	function jamImg(jamRoomCond) {
+		console.log("Help");
+		if (jamRoomCond == 1) {
+			return '<img src="images/jam.png" alt="Image" height="17" ><br>'
+		} else if (jamRoomCond == 0) {
+			return ' '
+		}
+	}
+	document.getElementById("jamRoom1").innerHTML = jamImg({{ jam1Stat }});
+	document.getElementById("jamRoom2").innerHTML = jamImg({{ jam2Stat }});
+	document.getElementById("jamRoom3").innerHTML = jamImg({{ jam3Stat }});
+	document.getElementById("jamRoom4").innerHTML = jamImg({{ jam4Stat }});
+	</script>
     </body>
 </html>
