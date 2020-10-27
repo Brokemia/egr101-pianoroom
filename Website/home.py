@@ -54,11 +54,11 @@ def home():
 
 @app.route('/images/<filename>')
 def display_image(filename):
-    return redirect(url_for('templates', filename='images/' + filename), code=301)
+    return redirect(url_for('static', filename='images/' + filename), code=301)
     
 @app.route('/styles/<filename>')
 def get_style(filename):
-    return redirect(url_for('templates', filename='styles/' + filename), code=301)
+    return redirect(url_for('static', filename='styles/' + filename), code=301)
 
 if __name__ == '__main__':
     print(time.time())

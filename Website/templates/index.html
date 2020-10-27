@@ -2,14 +2,32 @@
     <head>
         <title>Piano Room Status</title>
 		<script type="text/javascript">
-			// TODO Swap css out if mobile
+			var forceMobile = false;
+			
+			var isMobile = forceMobile || navigator.userAgent.toLowerCase().match(/mobile/i);
+			
+			// Get HTML head element 
+			var head = document.getElementsByTagName('head')[0];  
+	  
+			// Create new link Element 
+			var link = document.createElement('link'); 
+	  
+			// set the attributes for link element  
+			link.rel = 'stylesheet';  
+		  
+			link.type = 'text/css';
+
+			if(isMobile) {
+				link.href = "styles/mobile.css";
+			} else {
+				link.href = "styles/desktop.css";
+			}
+	  
+			// Append link element to HTML head 
+			head.appendChild(link);
 		</script>
 		<style type="text/css">
 		.tg  {border-collapse:collapse;border-spacing:0;}
-		.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:3.5vw;
-		  overflow:hidden;padding:10px 5px;word-break:normal;}
-		.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:3.5vw;
-		  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
 		.tg .tg-oe15{background-color:#ffffff;border-color:#ffffff;text-align:left;vertical-align:top}
 		.tg .tg-zv4m{border-color:#ffffff;text-align:left;vertical-align:top}
 		.tg .tg-usta{background-color:#12a8da;border-color:#ffffff;text-align:left;vertical-align:top}
@@ -23,7 +41,6 @@
 		}
 		
 		#header h1 {
-			font-size:6vw;
 			background-color: #012169;
 			color: #ffffff;
 			padding-left: 10px;
@@ -33,10 +50,6 @@
 		
 		#content {
 			margin: 5px;
-		}
-		
-		.tg-usta img {
-			width:12vw
 		}
 		</style>
     </head>
@@ -52,7 +65,7 @@
 					<th class="tg-v9lk">Room No.</th>
 					<th class="tg-v9lk">Availability</th>
 					<th class="tg-v9lk">Time Since Use</th>
-					<th class="tg-v9lk">Jam Session <img src="images/question_mark.png" width="10%" title="This column indicates whether a person is open to play music with others" onclick="alert('This column indicates whether a person is open to play music with others')" /></th>
+					<th class="tg-v9lk">Jam Session <img src="images/question_mark.png" title="This column indicates whether a person is open to play music with others" onclick="alert('This column indicates whether a person is open to play music with others')" /></th>
 				  </tr>
 				</thead>
 				<tbody>
