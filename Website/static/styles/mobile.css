@@ -14,3 +14,14 @@
 .tg-v9lk img {
 	width: 10%;
 }
+
+/* Style the tab */
+.tab {
+	width: 88vw;
+}
+
+/* Style the tab content */
+.chart-container {
+	padding: 1vw 2vw;
+	width:84vw;
+}

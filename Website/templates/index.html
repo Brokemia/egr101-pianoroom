@@ -51,6 +51,46 @@
 		#content {
 			margin: 5px;
 		}
+		
+		/* Style the tab */
+		.tab {
+			display: inline-block;
+			overflow: hidden;
+			border: 1px solid #ccc;
+			background-color: #012169;
+			color:white;
+		}
+
+		/* Style the buttons that are used to open the tab content */
+		.tab button {
+			background-color: inherit;
+			color: inherit;
+			float: left;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			padding: 14px 16px;
+			transition: 0.3s;
+		}
+
+		/* Change background color of buttons on hover */
+		.tab button:hover {
+			background-color: #12a8da;
+		}
+
+		/* Create an active/current tablink class */
+		.tab button.active {
+			background-color: white;
+			color: black;
+		}
+
+		/* Style the tab content */
+		.chart-container {
+			display: none;
+			border: 1px solid #ccc;
+			border-top: none;
+			position: relative;
+		}
 		</style>
 		<script type="text/javascript" src="scripts/Chart.js"></script>
 		<script type="text/javascript" src="scripts/Chart.min.js"></script>
@@ -98,48 +138,104 @@
 				</tbody>
 			</table>
 			<br /><br />
-			<div class="chart-container" style="position: relative; height:25vw; width:24vw">
-				<canvas id="myChart"></canvas>
+			<div class="tab">
+				<button class="tablinks" onclick="openChart(event, 0)">Sun</button>
+				<button class="tablinks" onclick="openChart(event, 1)">Mon</button>
+				<button class="tablinks" onclick="openChart(event, 2)">Tue</button>
+				<button class="tablinks" onclick="openChart(event, 3)">Wed</button>
+				<button class="tablinks" onclick="openChart(event, 4)">Thu</button>
+				<button class="tablinks" onclick="openChart(event, 5)">Fri</button>
+				<button class="tablinks" onclick="openChart(event, 6)">Sat</button>
+			</div>
+			<div id="chart-container0" class="chart-container" style="display:block">
+				<canvas id="myChart0"></canvas>
+			</div>
+			<div id="chart-container1" class="chart-container">
+				<canvas id="myChart1"></canvas>
+			</div>
+			<div id="chart-container2" class="chart-container">
+				<canvas id="myChart2"></canvas>
+			</div>
+			<div id="chart-container3" class="chart-container">
+				<canvas id="myChart3"></canvas>
+			</div>
+			<div id="chart-container4" class="chart-container">
+				<canvas id="myChart4"></canvas>
+			</div>
+			<div id="chart-container5" class="chart-container">
+				<canvas id="myChart5"></canvas>
+			</div>
+			<div id="chart-container6" class="chart-container">
+				<canvas id="myChart6"></canvas>
 			</div>
 		</div>
 		<script>
-			var ctx = document.getElementById('myChart').getContext('2d');
-			var myChart = new Chart(ctx, {
-				type: 'bar',
-				data: {
-					labels: ['12am', '2am', '4am', '6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'],
-					datasets: [{
-						label: '# of Votes',
-						data: [12, 19, 3, 5, 2, 3],
-						backgroundColor: [
-							'rgba(255, 99, 132, 0.2)',
-							'rgba(54, 162, 235, 0.2)',
-							'rgba(255, 206, 86, 0.2)',
-							'rgba(75, 192, 192, 0.2)',
-							'rgba(153, 102, 255, 0.2)',
-							'rgba(255, 159, 64, 0.2)'
-						],
-						borderColor: [
-							'rgba(255, 99, 132, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(255, 206, 86, 1)',
-							'rgba(75, 192, 192, 1)',
-							'rgba(153, 102, 255, 1)',
-							'rgba(255, 159, 64, 1)'
-						],
-						borderWidth: 1
-					}]
-				},
-				options: {
-					scales: {
-						yAxes: [{
-							ticks: {
-								beginAtZero: true
-							}
+			var data = {{ data }};
+			for(var i = 0; i < 7; i++) {
+				var ctx = document.getElementById('myChart' + i).getContext('2d');
+				var myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						labels: ['12am', '2am', '4am', '6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'],
+						datasets: [{
+							label: 'Room Occupancy',
+							data: data[i],
+							backgroundColor: [
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da'
+							],
+							borderColor: [
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da',
+								'#12a8da'
+							],
+							borderWidth: 1
 						}]
+					},
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: true
+								}
+							}]
+						}
 					}
+				});
+			}
+			
+			function openChart(evt, chartId) {
+				var i, tabcontent, tablinks;
+				tabcontent = document.getElementsByClassName("chart-container");
+				for (i = 0; i < tabcontent.length; i++) {
+					tabcontent[i].style.display = "none";
 				}
-			});
-			</script>
+				tablinks = document.getElementsByClassName("tablinks");
+				for (i = 0; i < tablinks.length; i++) {
+					tablinks[i].className = tablinks[i].className.replace(" active", "");
+				}
+				document.getElementById("chart-container"+chartId).style.display = "block";
+				evt.currentTarget.className += " active";
+			}
+		</script>
     </body>
 </html>
