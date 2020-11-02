@@ -139,13 +139,13 @@
 			</table>
 			<br /><br />
 			<div class="tab">
-				<button class="tablinks" onclick="openChart(event, 0)">Sun</button>
-				<button class="tablinks" onclick="openChart(event, 1)">Mon</button>
-				<button class="tablinks" onclick="openChart(event, 2)">Tue</button>
-				<button class="tablinks" onclick="openChart(event, 3)">Wed</button>
-				<button class="tablinks" onclick="openChart(event, 4)">Thu</button>
-				<button class="tablinks" onclick="openChart(event, 5)">Fri</button>
-				<button class="tablinks" onclick="openChart(event, 6)">Sat</button>
+				<button class="tablinks" onclick="openChart(event, 0)">Mon</button>
+				<button class="tablinks" onclick="openChart(event, 1)">Tue</button>
+				<button class="tablinks" onclick="openChart(event, 2)">Wed</button>
+				<button class="tablinks" onclick="openChart(event, 3)">Thu</button>
+				<button class="tablinks" onclick="openChart(event, 4)">Fri</button>
+				<button class="tablinks" onclick="openChart(event, 5)">Sat</button>
+				<button class="tablinks" onclick="openChart(event, 6)">Sun</button>
 			</div>
 			<div id="chart-container0" class="chart-container" style="display:block">
 				<canvas id="myChart0"></canvas>
@@ -170,7 +170,7 @@
 			</div>
 		</div>
 		<script>
-			var data = {{ data }};
+			var data = {{ chartData }};
 			for(var i = 0; i < 7; i++) {
 				var ctx = document.getElementById('myChart' + i).getContext('2d');
 				var myChart = new Chart(ctx, {
