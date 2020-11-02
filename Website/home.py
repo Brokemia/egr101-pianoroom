@@ -74,5 +74,4 @@ def get_script(filename):
     return redirect(url_for('static', filename='scripts/' + filename), code=301)
 
 if __name__ == '__main__':
-    print(time.time())
-    app.run()
+    app.run(host='0.0.0.0', port=80)
