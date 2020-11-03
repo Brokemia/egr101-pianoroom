@@ -22,7 +22,7 @@ BLUE_PIN = 3
 GREEN_PIN = 4
 
 #URLs for data
-ROOT_URL = 'http://test.com'
+ROOT_URL = 'http://54.147.192.125'
 if "-local" in sys.argv:
     ROOT_URL = 'http://localhost:5000'
 FALSE_ROOM_URL = "/roomdata?r={}&f=0".format(ROOM_NUM)
