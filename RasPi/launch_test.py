@@ -13,10 +13,10 @@ PROGRAM_HZ = 30 #update speed of program
 
 # PINS
 JAM_BUTTON_PIN = 16
-JAM_LED_PIN = 14
+JAM_LED_PIN = 18
 PIR_PIN = 20
-DISTANCE_ECHO_PIN = 18
-DISTANCE_TRIGGER_PIN = 19
+DISTANCE_ECHO_PIN = 25
+DISTANCE_TRIGGER_PIN = 8
 RED_PIN = 2
 BLUE_PIN = 3
 GREEN_PIN = 4
@@ -32,7 +32,7 @@ TRUE_JAM_URL   = "/jamdata?r={}&j=1".format(ROOM_NUM)
 
 # Sensor and output setup
 pir_sensor = Button(PIR_PIN, True)
-distance_sensor = DistanceSensor(echo=DISTANCE_ECHO_PIN, trigger=DISTANCE_TRIGGER_PIN)
+distance_sensor = DistanceSensor(echo=DISTANCE_ECHO_PIN, trigger=DISTANCE_TRIGGER_PIN, max_distance=3)
 rgb_led = RGBLED(RED_PIN, BLUE_PIN, GREEN_PIN)
 rgb_led.off()
 jam_led = LED(JAM_LED_PIN)
@@ -111,19 +111,19 @@ def main_work():
     # -----------------PERSON DETECTION-----------------
     # If pir or distance sensor tripped, person_detected is True
     person_detected = False
-    if pir_sensor.is_pressed():
+    if pir_sensor.is_pressed:
         person_detected = True
         pir_not_detected_time = 0
     else:
         # If pir off for more than DISTANCE_RESET_SECS, reset the maximum distance for the distance sensor
         if pir_not_detected_time > DISTANCE_RESET_SECS*1000:
-            max_meters = distance_sensor.distance()
+            # max_meters = distance_sensor.distance()
             pir_not_detected_time = 0
         else:
             pir_not_detected_time += PROGRAM_HZ
 
-    if distance_sensor.distance() <= max_meters:
-        person_detected = True
+    # if distance_sensor.distance() <= max_meters:
+        # person_detected = True
 
     # If a person is detected, set person_present to True
     if person_detected:
@@ -158,7 +158,7 @@ def main_work():
         jam_on = False
     else:
         # If the button state is True and was not True, set jam_on to whatever it is not
-        jam_pressed = jam_button.is_pressed()
+        jam_pressed = jam_button.is_pressed
         if jam_pressed and not jam_was_pressed:
             jam_on = not jam_on
         jam_was_pressed = jam_pressed
@@ -187,6 +187,10 @@ def testing():
     os.system('cls' if os.name == 'nt' else 'clear')
     print(str(pir_sensor.value))
     # print(str(distance_sensor.distance))
+    if distance_sensor.distance <= DEFAULT_MAXIMUM_METERS:
+        print("Distance!")
+    else:
+        print("no distance")
     print(str(jam_button.value))
     rgb_led.color = Color('green')
     rgb_led.on()
@@ -197,8 +201,9 @@ def testing():
 # Runs the code in normal mode if testing flag is present, otherwise sets led to red if any errors
 if sys.argv[1] == "-testing":
     while True: testing()
-network_wait()
+# network_wait()
 if sys.argv[1] == "-v":
+    print("starting")
     while True: main_work()
 else:
     while True:
