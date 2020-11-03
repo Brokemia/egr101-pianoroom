@@ -70,9 +70,10 @@ def network_wait():
 # Sent a http request to the given url, checking for any network errors
 def send_http(url):
     # Check pinging google, if any issues go to network_wait
-    ping_result = os.popen('ping google.com').read()
-    if "Received = 4" not in ping_result: network_wait()
+    # ping_result = os.popen('ping google.com').read()
+    # if "Received = 4" not in ping_result: network_wait()
     # perform http request using requests, if any errors go to network wait and try again once it exits
+    print("sending url: " + url)
     try:
         r = requests.get(url)
         if r.status_code >= 300: 
@@ -81,6 +82,7 @@ def send_http(url):
     except:
         network_wait()
         r = requests.get(url)
+    print("url sent!\n")
     
 
 # VARIABLE BOUNDING
