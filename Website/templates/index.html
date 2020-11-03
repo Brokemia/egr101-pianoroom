@@ -50,53 +50,58 @@
 				<tbody>
 				  <tr>
 					<td class="tg-vub4">1</td>
-					<td class="tg-zv4m">{{ room1 }}</td>
+					<td class="tg-zv4m" id="roomc1">{{ room1 }}</td>
 					<td class="tg-zv4m">{{ time1 }}</td>
 					<td class="tg-zv4m" id="jamRoom1"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">2</td>
-					<td class="tg-usta">{{ room2 }}</td>
+					<td class="tg-usta" id="roomc2">{{ room2 }}</td>
 					<td class="tg-usta">{{ time2 }}</td>
 					<td class="tg-usta" id="jamRoom2"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">3</td>
-					<td class="tg-zv4m">{{ room3 }}</td>
+					<td class="tg-zv4m" id="roomc3">{{ room3 }}</td>
 					<td class="tg-zv4m">{{ time3 }}</td>
 					<td class="tg-zv4m" id="jamRoom3"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">4</td>
-					<td class="tg-usta">{{ room4 }}</td>
+					<td class="tg-usta" id="roomc4">{{ room4 }}</td>
 					<td class="tg-usta">{{ time4 }}</td>
 					<td class="tg-usta" id="jamRoom4"></td>
 				  </tr>
 				</tbody>
 			</table>
+
+
 			<br>
 			<br>
-			<form action="/emails.txt">
+			<form action="http://127.0.0.1:5000/result" method="POST">
 				<label for="emails">Write Email to recieve alert
 					on room openings:</label><br>
-				<input type="email" id="emails" name="emails"><br>
+				<input type="email" id="emails" name="emails"
+					   value={{request.form.email}}><br>
 				<br>
-				<input type="submit" value="Submit">
+				<button type=”submit”> Submit </button>
 			</form>
+			<p>{{ emailVerification }}</p>
 		</div>
+
 	<script type="text/javascript">
 	function jamImg(jamRoomCond) {
-		console.log("Help");
 		if (jamRoomCond == 1) {
 			return '<img src="images/jam.png" alt="Image" height="17" ><br>'
 		} else if (jamRoomCond == 0) {
 			return ' '
 		}
 	}
-	document.getElementById("jamRoom1").innerHTML = jamImg({{ jam1Stat }});
-	document.getElementById("jamRoom2").innerHTML = jamImg({{ jam2Stat }});
-	document.getElementById("jamRoom3").innerHTML = jamImg({{ jam3Stat }});
-	document.getElementById("jamRoom4").innerHTML = jamImg({{ jam4Stat }});
+
+	document.getElementById("jamRoom1").innerHTML = jamImg({{ jamStat1 }});
+	document.getElementById("jamRoom2").innerHTML = jamImg({{ jamStat2 }});
+	document.getElementById("jamRoom3").innerHTML = jamImg({{ jamStat3 }});
+	document.getElementById("jamRoom4").innerHTML = jamImg({{ jamStat4 }});
 	</script>
     </body>
 </html>
