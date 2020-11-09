@@ -114,25 +114,25 @@
 				  <tr>
 					<td class="tg-vub4">1</td>
 					<td class="tg-zv4m" id="roomc1">{{ room1 }}</td>
-					<td class="tg-zv4m">{{ time1 }}</td>
+					<td class="tg-zv4m" id="time1">{{ time1 }}</td>
 					<td class="tg-zv4m" id="jamRoom1"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">2</td>
 					<td class="tg-usta" id="roomc2">{{ room2 }}</td>
-					<td class="tg-usta">{{ time2 }}</td>
+					<td class="tg-usta" id="time2">{{ time2 }}</td>
 					<td class="tg-usta" id="jamRoom2"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">3</td>
 					<td class="tg-zv4m" id="roomc3">{{ room3 }}</td>
-					<td class="tg-zv4m">{{ time3 }}</td>
+					<td class="tg-zv4m" id="time3">{{ time3 }}</td>
 					<td class="tg-zv4m" id="jamRoom3"></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">4</td>
 					<td class="tg-usta" id="roomc4">{{ room4 }}</td>
-					<td class="tg-usta">{{ time4 }}</td>
+					<td class="tg-usta" id="time4">{{ time4 }}</td>
 					<td class="tg-usta" id="jamRoom4"></td>
 				  </tr>
 				</tbody>
@@ -140,7 +140,7 @@
 			
 			<br /><br />
 			<div class="tab">
-				<button class="tablinks" onclick="openChart(event, 0)">Mon</button>
+				<button class="tablinks active" onclick="openChart(event, 0)">Mon</button>
 				<button class="tablinks" onclick="openChart(event, 1)">Tue</button>
 				<button class="tablinks" onclick="openChart(event, 2)">Wed</button>
 				<button class="tablinks" onclick="openChart(event, 3)">Thu</button>
@@ -177,7 +177,6 @@
 					on room openings:</label><br>
 				<input type="email" id="emails" name="emails"
 					   value={{request.form.email}}><br>
-				<br>
 				<button type=”submit”> Submit </button>
 			</form>
 		</div>
@@ -185,6 +184,7 @@
 			var data = {{ chartData }};
 			for(var i = 0; i < 7; i++) {
 				var ctx = document.getElementById('myChart' + i).getContext('2d');
+				Chart.defaults.global.defaultFontSize = document.documentElement.clientWidth * .035;
 				var myChart = new Chart(ctx, {
 					type: 'bar',
 					data: {
@@ -224,10 +224,13 @@
 						}]
 					},
 					options: {
+						tooltips: false,
 						scales: {
 							yAxes: [{
 								ticks: {
-									beginAtZero: true
+									beginAtZero: true,
+									max: 28800,
+									display: false
 								}
 							}]
 						}
@@ -253,16 +256,37 @@
 		<script type="text/javascript">
 			function jamImg(jamRoomCond) {
 				if (jamRoomCond == 1) {
-					return '<img src="images/jam.png" alt="Image" height="17" ><br>'
+					return '<img src="images/jam.png" alt="Image" ><br>'
 				} else if (jamRoomCond == 0) {
-					return ' '
+					return ''
 				}
 			}
-
-			document.getElementById("jamRoom1").innerHTML = jamImg({{ jamStat1 }});
-			document.getElementById("jamRoom2").innerHTML = jamImg({{ jamStat2 }});
-			document.getElementById("jamRoom3").innerHTML = jamImg({{ jamStat3 }});
-			document.getElementById("jamRoom4").innerHTML = jamImg({{ jamStat4 }});
+			
+			function updateJam(jam1, jam2, jam3, jam4) {
+				document.getElementById("jamRoom1").innerHTML = jamImg(jam1);
+				document.getElementById("jamRoom2").innerHTML = jamImg(jam2);
+				document.getElementById("jamRoom3").innerHTML = jamImg(jam3);
+				document.getElementById("jamRoom4").innerHTML = jamImg(jam4);
+			}
+			
+			updateJam({{ jamStat1 }}, {{ jamStat2 }}, {{ jamStat3 }}, {{ jamStat4 }});
+			
+			var source = new EventSource("/listen");
+			source.onmessage = function(event) {
+				msg = JSON.parse(event.data.replaceAll("\'", "\""));
+								
+				document.getElementById("roomc1").innerHTML = msg.room1;
+				document.getElementById("roomc2").innerHTML = msg.room2;
+				document.getElementById("roomc3").innerHTML = msg.room3;
+				document.getElementById("roomc4").innerHTML = msg.room4;
+				
+				document.getElementById("time1").innerHTML = msg.time1;
+				document.getElementById("time2").innerHTML = msg.time2;
+				document.getElementById("time3").innerHTML = msg.time3;
+				document.getElementById("time4").innerHTML = msg.time4;
+				
+				updateJam(msg.jam1, msg.jam2, msg.jam3, msg.jam4);
+			};
 		</script>
     </body>
 </html>

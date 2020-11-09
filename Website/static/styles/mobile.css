@@ -20,8 +20,21 @@
 	width: 88vw;
 }
 
+/* Style the buttons that are used to open the tab content */
+.tab button {
+	font-size:3.5vw;
+}
+
 /* Style the tab content */
 .chart-container {
 	padding: 1vw 2vw;
 	width:84vw;
+}
+
+form label {
+	font-size:3.5vw;
+}
+
+form button {
+	font-size:3.5vw;
 }

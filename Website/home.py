@@ -1,10 +1,31 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, Response
 import json
 import time
 import datetime as dt
 import _thread, threading
 import math
 import secEmailsys
+import queue
+
+# https://maxhalford.github.io/blog/flask-sse-no-deps/
+class MessageAnnouncer:
+
+    def __init__(self):
+        self.listeners = []
+
+    def listen(self):
+        q = queue.Queue(maxsize=5)
+        self.listeners.append(q)
+        return q
+
+    def announce(self, msg):
+        for i in reversed(range(len(self.listeners))):
+            try:
+                self.listeners[i].put_nowait(msg)
+            except queue.Full:
+                del self.listeners[i]
+                
+announcer = MessageAnnouncer()
 
 UPLOAD_FOLDER = 'templates/images/'
 
@@ -15,6 +36,23 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 fname = 'occupancy.json'
+
+def format_sse(data: str, event=None) -> str:
+    msg = f'data: {data}\n\n'
+    if event is not None:
+        msg = f'event: {event}\n{msg}'
+    return msg
+    
+@app.route('/listen', methods=['GET'])
+def listen():
+
+    def stream():
+        messages = announcer.listen()  # returns a queue.Queue
+        while True:
+            msg = messages.get()  # blocks until a new message arrives
+            yield msg
+
+    return Response(stream(), mimetype='text/event-stream')
 
 @app.route('/room<int:roomNo>')
 def room(roomNo):
@@ -63,7 +101,14 @@ def get_room_data():
         with open(fname, 'w') as f:
             json.dump(data, f)
             
-    return "Room Availability Data set"
+        prepareDataForDisplay(data)
+        
+        msg = format_sse(data=str({'room1':data['room1'],'room2':data['room2'],'room3':data['room3'],'room4':data['room4'],
+                            'time1':data['time1'],'time2':data['time2'],'time3':data['time3'],'time4':data['time4'],
+                            'jam1':data['jam1'],'jam2':data['jam2'],'jam3':data['jam3'],'jam4':data['jam4']}))
+        announcer.announce(msg=msg)
+            
+        return "Room Availability Data set"
 
 #http://127.0.0.1:5000/jamdata?r=1&j=1  Update Jam Data
 @app.route('/jamdata')
@@ -86,6 +131,14 @@ def get_jam_data():
 
     with open(fname, 'w') as f:
         json.dump(data, f)
+        
+    prepareDataForDisplay(data)
+            
+    msg = format_sse(data=str({'room1':data['room1'],'room2':data['room2'],'room3':data['room3'],'room4':data['room4'],
+                            'time1':data['time1'],'time2':data['time2'],'time3':data['time3'],'time4':data['time4'],
+                            'jam1':data['jam1'],'jam2':data['jam2'],'jam3':data['jam3'],'jam4':data['jam4']}))
+    announcer.announce(msg=msg)
+        
     return "Jam Data set"
 
 @app.route('/result', methods = ['POST', 'GET'])
@@ -96,44 +149,53 @@ def writeEmail():
         if "." in email:
             f = open("emailstext", "a")
             write = email + "\n"
-            print("ran")
+            
             f.write(write)
             f.close()
     else:
         print("Error No Input Dectected")
 
     return redirect("/", code=301)
+    
+def prepareDataForDisplay(data):
+    for roomNo in range(1,5):
+        if data[f'room{roomNo}']:
+            data[f'room{roomNo}'] = 'Full'
+            data[f'time{roomNo}'] = 'In Use'
+        else:
+            data[f'room{roomNo}'] = 'Available'
+            recordedTime = data[f'time{roomNo}']
+            timeDiff = int(time.time() - recordedTime)
+            data[f'time{roomNo}'] = str(time.strftime('%H:%M:%S', time.gmtime(timeDiff)))
+    averages = []
+    chart = data['chartData']
+
+    for i in range(7):
+        averages.append([0,0,0,0,0,0,0,0,0,0,0,0])
+    for i in range(len(chart)):
+        # If the week contains any non-zero values
+        any = False
+        for j in range(len(chart[i])):
+            for k in range(len(chart[i][j])):
+                if chart[i][j][k] != 0:
+                    any = True
+                    break
+        if any:
+            for j in range(len(averages)):
+                for k in range(len(averages[j])):
+                    averages[j][k] += chart[i][j][k]
+    data['chartData'] = averages
 
 @app.route('/')
 def home():
     with open(fname) as f:
         data = json.load(f)
-    for roomNo in range(1,5):
-        if data[f'room{roomNo}']:
-            data[f'time{roomNo}'] = 'In Use'
-        else:
-            recordedTime = data[f'time{roomNo}']
-            timeDiff = int(time.time() - recordedTime)
-            data[f'time{roomNo}'] = str(time.strftime('%H:%M:%S', time.gmtime(timeDiff)))
-        averages = []
-        chart = data['chartData']
-        for i in range(7):
-            averages.append([0,0,0,0,0,0,0,0,0,0,0,0])
-        for i in range(len(chart)):
-            # If the week contains any non-zero values
-            any = False
-            for j in range(len(chart[i])):
-                for k in range(len(chart[i][j])):
-                    if chart[i][j][k] != 0:
-                        any = True
-                        break
-            if any:
-                for j in range(len(averages)):
-                    for k in range(len(averages[j])):
-                        averages[j][k] += chart[i][j][k]
+        
+    prepareDataForDisplay(data)
+    
     return render_template('index.html', room1=data['room1'], room2=data['room2'], room3=data['room3'], room4=data['room4'],
                                 time1=data["time1"], time2=data['time2'], time3=data['time3'], time4=data['time4'],jamStat1= data["jam1"], jamStat2= data["jam2"],
-                           jamStat3= data["jam3"], jamStat4= data["jam4"], chartData=averages)
+                           jamStat3= data["jam3"], jamStat4= data["jam4"], chartData=data['chartData'])
 
 @app.route('/images/<filename>')
 def display_image(filename):
@@ -167,8 +229,17 @@ def update_timing(data):
             # Check how long since the last update
             diff = time.time() - data[f'time{i}']
             week = int(now.strftime("%W"))
+            lastHour = now.replace(second=0, microsecond=0, minute=0, hour=(now.hour//2)*2)
             
-            data["chartData"][week][now.weekday()][now.hour // 2] += min(time.time() - data[f'time{i}'], 3600)
+            data["chartData"][week][now.weekday()][now.hour // 2] += min(time.time() - data[f'time{i}'], time.time() - lastHour.timestamp())
+            
+            # Reset the next week, so it doesn't add up over multiple years
+            if week < len(data['chartData'])-1:
+                for j in range(len(data["chartData"][week+1])):
+                    data['chartData'][week+1][j] = [0,0,0,0,0,0,0,0,0,0,0,0]
+            else:
+                for j in range(len(data["chartData"][0])):
+                    data['chartData'][0][j] = [0,0,0,0,0,0,0,0,0,0,0,0]
 
             data[f'time{i}'] = time.time()
 
