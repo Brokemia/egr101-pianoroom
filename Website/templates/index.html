@@ -229,10 +229,18 @@
 						tooltips: false,
 						scales: {
 							yAxes: [{
+								scaleLabel: {
+									display: true,
+									labelString: 'Percent Use'
+								},
 								ticks: {
 									beginAtZero: true,
-									max: 28800,
-									display: false
+									max: 100,
+									display: true,
+									stepSize: 20,
+									callback: function(value, index, values) {
+										return value + "%";
+									}
 								}
 							}]
 						}

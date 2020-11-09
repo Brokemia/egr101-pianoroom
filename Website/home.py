@@ -184,6 +184,11 @@ def prepareDataForDisplay(data):
             for j in range(len(averages)):
                 for k in range(len(averages[j])):
                     averages[j][k] += chart[i][j][k]
+             
+    for j in range(len(averages)):
+        for k in range(len(averages[j])):
+            averages[j][k] /= 288;
+    
     data['chartData'] = averages
 
 @app.route('/')
