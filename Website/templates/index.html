@@ -184,7 +184,9 @@
 			var data = {{ chartData }};
 			for(var i = 0; i < 7; i++) {
 				var ctx = document.getElementById('myChart' + i).getContext('2d');
-				Chart.defaults.global.defaultFontSize = document.documentElement.clientWidth * .035;
+				if(isMobile) {
+					Chart.defaults.global.defaultFontSize = document.documentElement.clientWidth * .035;
+				}
 				var myChart = new Chart(ctx, {
 					type: 'bar',
 					data: {
