@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
+from validate_email import validate_email
 import json
 import time
 import datetime as dt
@@ -22,7 +23,7 @@ def room(roomNo):
         data = json.load(f)
         return f"Room {roomNo} is {'closed' if data[f'room{roomNo}'] else 'open'}"
 
-#http://127.0.0.1:5000/roomdata?r=1&f=1  Update Page Data
+#http://127.0.0.1/roomdata?r=1&f=1  Update Page Data
 @app.route('/roomdata')
 def get_room_data():
     roomNo = int(request.args.get('r'))
@@ -49,16 +50,6 @@ def get_room_data():
         if not(full):
             data[f'jam{roomNo}'] = 0
             data[f'recent{roomNo}'] = True
-            
-            
-        #int(time.time() - data[f'time{ro}']) >= 600 or
-        for ro in range(1,5):
-            if data[f'recent{ro}']:
-                secEmailsys.send_mail()
-                data[f'recent{ro}'] = False
-                open('emailstext', 'w').close()
-            else:
-                data[f'recent{ro}'] = False
                               
         with open(fname, 'w') as f:
             json.dump(data, f)
@@ -93,10 +84,9 @@ def writeEmail():
     if request.method == 'POST':
         email = request.form['emails']
 
-        if "." in email:
+        if validate_email(email, verify=True):
             f = open("emailstext", "a")
             write = email + "\n"
-            print("ran")
             f.write(write)
             f.close()
     else:
@@ -114,7 +104,32 @@ def home():
         else:
             recordedTime = data[f'time{roomNo}']
             timeDiff = int(time.time() - recordedTime)
-            data[f'time{roomNo}'] = str(time.strftime('%H:%M:%S', time.gmtime(timeDiff)))
+            strTime = str(time.strftime('%Y:%m:%d:%H:%M:%S',
+                                                      time.gmtime(timeDiff)))
+            data[f'time{roomNo}'] = ""
+            strTimeList = strTime.split(":")
+            days = 0
+            counter = 0
+            limit = 2
+            if int(strTimeList[0]) > 1970:
+                days += (int(strTimeList[0]) - 1970) * 365
+            if int(strTimeList[1]) > 1:
+                days += (int(strTimeList[1]) - 1) * 30
+            if int(strTimeList[2]) > 1:
+                days += (int(strTimeList[2]) - 1)
+            if days > 0 and counter < limit:
+                data[f'time{roomNo}'] += str(days) + "d "
+                counter += 1
+            if int(strTimeList[3]) > 0 and counter < limit:
+                data[f'time{roomNo}'] += strTimeList[3] + "h "
+                counter += 1
+            if int(strTimeList[4]) > 0 and counter < limit:
+                data[f'time{roomNo}'] += strTimeList[4] + "m "
+                counter += 1
+            if int(strTimeList[5]) > 0 and counter < limit:
+                data[f'time{roomNo}'] += strTimeList[5] + "s"
+                counter += 1
+
         averages = []
         chart = data['chartData']
         for i in range(7):
@@ -155,9 +170,18 @@ def update():
             with open(fname) as f:
                 data = json.load(f)
                 update_timing(data)
+
+            for ro in range(1, 5):
+                if data[f'recent{ro}'] and (int(time.time() - data[f'time{ro}'])>= 600):
+                    secEmailsys.send_mail()
+                    data[f'recent{ro}'] = False
+                    open('emailstext', 'w').close()
+                elif data[f'recent{ro}'] and (int(time.time() - data[f'time{ro}'])>= 1000):
+                    data[f'recent{ro}'] = False
+
             with open(fname, 'w') as f:
                 json.dump(data, f)
-        time.sleep(60)
+        time.sleep(10)
             
                 
 def update_timing(data):
