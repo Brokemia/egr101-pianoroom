@@ -198,7 +198,6 @@ def prepareDataForDisplay(data):
                 for j in range(len(averages)):
                     for k in range(len(averages[j])):
                         averages[j][k] += chart[i][j][k]
-            data[f'time{roomNo}'] = str(time.strftime('%H:%M:%S', time.gmtime(timeDiff)))
     averages = []
     chart = data['chartData']
 
