@@ -126,6 +126,8 @@ def main_work():
 
     # if distance_sensor.distance() <= max_meters:
         # person_detected = True
+    if jam_button.is_pressed:
+        person_detected = True
 
     # If a person is detected, set person_present to True
     if person_detected:
