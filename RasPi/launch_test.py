@@ -44,9 +44,9 @@ def network_wait():
     print("network error!")
     while True:
         # Check if pinging google works
-        ping_result = os.popen('ping google.com').read()
+        ping_result = requests.get("http://google.com")
         # If it worked, test http request
-        if "Received = 4" in ping_result:
+        if ping_result.status_code < 300:
             # Try the request, and if it works and has a good status code, exit the function
             try:
                 r = requests.get(ROOT_URL)
@@ -61,7 +61,7 @@ def network_wait():
                 print("request not received...")
         # If it didn't, print and check again
         else:
-            print("ping not working, likely no internet connection...")
+            print("ping to google not working, likely no internet connection...")
         
         # Set LED to yellow and wait to match PROGRAM_HZ
         rgb_led.color = Color('yellow')
@@ -70,9 +70,10 @@ def network_wait():
 # Sent a http request to the given url, checking for any network errors
 def send_http(url):
     # Check pinging google, if any issues go to network_wait
-    ping_result = os.popen('ping google.com').read()
-    if "Received = 4" not in ping_result: network_wait()
+    ping_result = requests.get("http://google.com")
+    if ping_result.status_code >= 300: network_wait()
     # perform http request using requests, if any errors go to network wait and try again once it exits
+    print("sending url: " + url)
     try:
         r = requests.get(url)
         if r.status_code >= 300: 
@@ -81,6 +82,7 @@ def send_http(url):
     except:
         network_wait()
         r = requests.get(url)
+    print("url sent!\n")
     
 
 # VARIABLE BOUNDING
