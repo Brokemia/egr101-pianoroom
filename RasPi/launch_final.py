@@ -12,14 +12,14 @@ DEFAULT_MAXIMUM_METERS = 1 #Distance in meters
 PROGRAM_HZ = 30 #update speed of program
 
 # PINS
-JAM_BUTTON_PIN = 16
-JAM_LED_PIN = 18
-PIR_PIN = 20
-DISTANCE_ECHO_PIN = 25
-DISTANCE_TRIGGER_PIN = 8
-RED_PIN = 2
-BLUE_PIN = 3
-GREEN_PIN = 4
+JAM_BUTTON_PIN = 25
+JAM_LED_PIN = 12
+PIR_PIN = 18
+DISTANCE_ECHO_PIN = 23
+DISTANCE_TRIGGER_PIN = 24
+RED_PIN = 16
+BLUE_PIN = 21
+GREEN_PIN = 20
 
 #URLs for data
 ROOT_URL = 'http://54.147.192.125'
@@ -32,7 +32,7 @@ TRUE_JAM_URL   = "/jamdata?r={}&j=1".format(ROOM_NUM)
 
 # Sensor and output setup
 pir_sensor = Button(PIR_PIN, True)
-distance_sensor = DistanceSensor(echo=DISTANCE_ECHO_PIN, trigger=DISTANCE_TRIGGER_PIN, max_distance=3)
+#distance_sensor = DistanceSensor(echo=DISTANCE_ECHO_PIN, trigger=DISTANCE_TRIGGER_PIN, max_distance=3)
 rgb_led = RGBLED(RED_PIN, BLUE_PIN, GREEN_PIN)
 rgb_led.off()
 jam_led = LED(JAM_LED_PIN)
@@ -113,7 +113,7 @@ def main_work():
     # -----------------PERSON DETECTION-----------------
     # If pir or distance sensor tripped, person_detected is True
     person_detected = False
-    if pir_sensor.is_pressed:
+    if not pir_sensor.is_pressed:
         person_detected = True
         pir_not_detected_time = 0
     else:
@@ -189,23 +189,43 @@ def main_work():
 
 def testing():
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(str(pir_sensor.value))
+    print(not pir_sensor.is_pressed)
     # print(str(distance_sensor.distance))
-    if distance_sensor.distance <= DEFAULT_MAXIMUM_METERS:
-        print("Distance!")
-    else:
-        print("no distance")
+    #if distance_sensor.distance <= DEFAULT_MAXIMUM_METERS:
+    #    print("Distance!")
+    #else:
+    #    print("no distance")
     print(str(jam_button.value))
-    rgb_led.color = Color('green')
+    rgb_led.color = Color('red')
     rgb_led.on()
-    jam_led.on()
+    jam_led.off()
     sleep(PROGRAM_HZ/1000)
 
+def trials():
+    if(not pir_sensor.is_pressed):
+        jam_led.on()
+    else:
+        jam_led.off()
+    input("Waiting for start...")
+    sys.stdout.write('\x1b[1A')
+    sys.stdout.write('\x1b[2K')
+    print("reading...")
+    t = 0
+    while(pir_sensor.is_pressed):
+        sleep(PROGRAM_HZ/1000)
+        t += PROGRAM_HZ
+    sys.stdout.write('\x1b[1A')
+    sys.stdout.write('\x1b[2K')
+    print(t)
+    sleep(PROGRAM_HZ/1000)
+    
 
 # Runs the code in normal mode if testing flag is present, otherwise sets led to red if any errors
 if sys.argv[1] == "-testing":
     while True: testing()
-# network_wait()
+if sys.argv[1] == "-trials":
+    while True: trials()
+send_http(ROOT_URL + FALSE_ROOM_URL)
 if sys.argv[1] == "-v":
     print("starting")
     while True: main_work()
