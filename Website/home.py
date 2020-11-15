@@ -222,14 +222,21 @@ def prepareDataForDisplay(data):
     
     data['chartData'] = averages
 
+@app.route('/mobile')
+def homeMobile():
+    return home(True)
+                           
 @app.route('/')
-def home():
+def homeDefault():
+    return home(False)
+
+def home(forceMobile):
     with open(fname) as f:
         data = json.load(f)
 
     prepareDataForDisplay(data)
 
-    return render_template('index.html', room1=data['room1'], room2=data['room2'], room3=data['room3'], room4=data['room4'],
+    return render_template('index.html', forceMobile=str(forceMobile).lower(), room1=data['room1'], room2=data['room2'], room3=data['room3'], room4=data['room4'],
                                 time1=data["time1"], time2=data['time2'], time3=data['time3'], time4=data['time4'],jamStat1= data["jam1"], jamStat2= data["jam2"],
                            jamStat3= data["jam3"], jamStat4= data["jam4"], chartData=data['chartData'])
 

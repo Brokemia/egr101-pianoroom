@@ -2,7 +2,7 @@
     <head>
         <title>Piano Room Status</title>
 		<script type="text/javascript">
-			var forceMobile = false;
+			var forceMobile = {{ forceMobile }};
 			
 			var isMobile = forceMobile || navigator.userAgent.toLowerCase().match(/mobile/i);
 			
@@ -115,25 +115,25 @@
 					<td class="tg-vub4">1</td>
 					<td class="tg-zv4m" id="roomc1">{{ room1 }}</td>
 					<td class="tg-zv4m" id="time1">{{ time1 }}</td>
-					<td class="tg-zv4m" id="jamRoom1"></td>
+					<td class="tg-zv4m"><img src="images/jamnote.png" id="jamRoom1" alt="Image" style="display:none"><br></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">2</td>
 					<td class="tg-usta" id="roomc2">{{ room2 }}</td>
 					<td class="tg-usta" id="time2">{{ time2 }}</td>
-					<td class="tg-usta" id="jamRoom2"></td>
+					<td class="tg-usta"><img src="images/jamnote.png" id="jamRoom2" alt="Image" style="display:none"><br></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">3</td>
 					<td class="tg-zv4m" id="roomc3">{{ room3 }}</td>
 					<td class="tg-zv4m" id="time3">{{ time3 }}</td>
-					<td class="tg-zv4m" id="jamRoom3"></td>
+					<td class="tg-zv4m"><img src="images/jamnote.png" id="jamRoom3" alt="Image" style="display:none"><br></td>
 				  </tr>
 				  <tr>
 					<td class="tg-vub4">4</td>
 					<td class="tg-usta" id="roomc4">{{ room4 }}</td>
 					<td class="tg-usta" id="time4">{{ time4 }}</td>
-					<td class="tg-usta" id="jamRoom4"></td>
+					<td class="tg-usta"><img src="images/jamnote.png" id="jamRoom4" alt="Image" style="display:none"><br></td>
 				  </tr>
 				</tbody>
 			</table>
@@ -265,19 +265,19 @@
 		</script>
 
 		<script type="text/javascript">
-			function jamImg(jamRoomCond) {
+			function jamImgDisp(jamRoomCond) {
 				if (jamRoomCond == 1) {
-					return '<img src="images/jam.png" alt="Image" ><br>'
+					return 'inline'
 				} else if (jamRoomCond == 0) {
-					return ''
+					return 'none'
 				}
 			}
 			
 			function updateJam(jam1, jam2, jam3, jam4) {
-				document.getElementById("jamRoom1").innerHTML = jamImg(jam1);
-				document.getElementById("jamRoom2").innerHTML = jamImg(jam2);
-				document.getElementById("jamRoom3").innerHTML = jamImg(jam3);
-				document.getElementById("jamRoom4").innerHTML = jamImg(jam4);
+				document.getElementById("jamRoom1").style.display = jamImgDisp(jam1);
+				document.getElementById("jamRoom2").style.display = jamImgDisp(jam2);
+				document.getElementById("jamRoom3").style.display = jamImgDisp(jam3);
+				document.getElementById("jamRoom4").style.display = jamImgDisp(jam4);
 			}
 			
 			updateJam({{ jamStat1 }}, {{ jamStat2 }}, {{ jamStat3 }}, {{ jamStat4 }});
