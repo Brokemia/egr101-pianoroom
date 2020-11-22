@@ -182,24 +182,10 @@ def prepareDataForDisplay(data):
                 data[f'time{roomNo}'] += strTimeList[5] + "s"
                 counter += 1
 
-        averages = []
-        chart = data['chartData']
-        for i in range(7):
-            averages.append([0,0,0,0,0,0,0,0,0,0,0,0])
-        for i in range(len(chart)):
-            # If the week contains any non-zero values
-            any = False
-            for j in range(len(chart[i])):
-                for k in range(len(chart[i][j])):
-                    if chart[i][j][k] != 0:
-                        any = True
-                        break
-            if any:
-                for j in range(len(averages)):
-                    for k in range(len(averages[j])):
-                        averages[j][k] += chart[i][j][k]
     averages = []
     chart = data['chartData']
+    
+    roomsSurveyed = 0
 
     for i in range(7):
         averages.append([0,0,0,0,0,0,0,0,0,0,0,0])
@@ -212,13 +198,14 @@ def prepareDataForDisplay(data):
                     any = True
                     break
         if any:
+            roomsSurveyed += 1
             for j in range(len(averages)):
                 for k in range(len(averages[j])):
                     averages[j][k] += chart[i][j][k]
              
     for j in range(len(averages)):
         for k in range(len(averages[j])):
-            averages[j][k] /= 288;
+            averages[j][k] /= 288 * roomsSurveyed;
     
     data['chartData'] = averages
 
